@@ -1,9 +1,6 @@
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.orm import Session
-from database import crud, models, schemas
-from database.database import SessionLocal, engine
 
 from routers import minor_planets, cutouts
 
