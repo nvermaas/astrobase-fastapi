@@ -1,8 +1,22 @@
-from fastapi import APIRouter, Query
+from typing import List
 from enum import Enum
 from datetime import datetime
+from fastapi import APIRouter, Query, Depends
+from sqlalchemy.orm import Session
+from database import crud, models, schemas
+from database.database import SessionLocal, engine
 
 router = APIRouter(tags=["minor planets"],)
+
+# Dependency
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+# === demo stuff ======================================================================
 
 class MinorPlanetType(str, Enum):
     asteroid = "asteroid"
@@ -35,3 +49,12 @@ async def get_comet(name: str = Query(
     max_length=30),
     datetime: datetime = datetime.utcnow()):
     return {"comet": name, "datetime" : datetime}
+
+
+# === real stuff ======================================================================
+
+# http://127.0.0.1:8000/asteroids/
+@router.get("/asteroids/", tags=["minor planets"], response_model=List[schemas.Asteroid])
+async def get_astroids(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    items = crud.get_asteroids(db, skip=skip, limit=limit)
+    return items

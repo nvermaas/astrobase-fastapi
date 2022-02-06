@@ -1,6 +1,10 @@
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.orm import Session
+from database import crud, models, schemas
+from database.database import SessionLocal, engine
+
 from routers import minor_planets, cutouts
 
 app = FastAPI(
@@ -27,6 +31,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
